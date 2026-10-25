@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XCM Audit — fixed-scope reviews for Polkadot integrations</title>
+<meta name="description" content="Fixed-scope XCM integration audits for Polkadot teams. Every finding ships with the failing test that proves it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #edf0f2;
+    --panel: #f7f9fa;
+    --ink: #16232b;
+    --muted: #55666e;
+    --line: #c6d0d4;
+    --teal: #1f6f66;
+    --teal-soft: #d8e6e3;
+    --brass: #a97a24;
+    --max: 1120px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation: none !important; transition: none !important; }
+  }
+
+  body {
+    margin: 0;
+    overflow-x: clip;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--teal); text-underline-offset: 3px; }
+  code { overflow-wrap: anywhere; }
+  a:focus-visible, button:focus-visible {
+    outline: 3px solid var(--brass);
+    outline-offset: 3px;
+  }
+
+  .wrap { width: min(100% - 40px, var(--max)); margin-inline: auto; }
+
+  header.site {
+    padding: 26px 0 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .site-row {
+    display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px 24px;
+  }
+  .wordmark {
+    font-weight: 700; letter-spacing: -0.03em; font-size: 1.15rem;
+  }
+  .wordmark span { color: var(--teal); }
+  .site-note { color: var(--muted); font-size: 0.92rem; min-width: 0; overflow-wrap: anywhere; }
+  .site-note a { color: var(--ink); text-decoration-thickness: 1px; }
+
+  .hero { padding: 72px 0 40px; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 56px;
+    align-items: end;
+  }
+  h1 {
+    margin: 0 0 22px;
+    font-size: clamp(2.15rem, 6vw, 4.4rem);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+    font-weight: 700;
+    max-width: 12ch;
+  }
+  .lede {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: clamp(1.12rem, 2vw, 1.32rem);
+    line-height: 1.55;
+    max-width: 46ch;
+    margin: 0 0 30px;
+    color: #24343c;
+  }
+  .actions { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+  .btn {
+    display: inline-block;
+    background: var(--ink);
+    color: #fff;
+    text-decoration: none;
+    padding: 13px 20px;
+    font-weight: 600;
+    font-size: 0.98rem;
+    border: 1px solid var(--ink);
+  }
+  .btn:hover { background: var(--teal); border-color: var(--teal); }
+  .link-quiet { color: var(--ink); font-size: 0.96rem; }
+
+  .facts {
+    border-left: 2px solid var(--teal);
+    padding-left: 20px;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+  .facts strong { color: var(--ink); font-weight: 600; }
+
+  /* Route diagram */
+  .route { padding: 26px 0 8px; }
+  .route-head {
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; align-items: baseline;
+    margin-bottom: 26px;
+  }
+  h2 {
+    margin: 0 0 10px;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .route-head p { margin: 0; color: var(--muted); max-width: 44ch; font-size: 0.96rem; }
+
+  .route-list {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+    border-top: 1px solid var(--line);
+  }
+  .route-list li {
+    position: relative;
+    padding: 26px 26px 30px 0;
+    border-right: 1px solid var(--line);
+  }
+  .route-list li:last-child { border-right: 0; padding-right: 0; padding-left: 26px; }
+  .route-list li:nth-child(2) { padding-left: 26px; }
+  .route-list li::before {
+    content: "";
+    position: absolute; top: -5px; left: 0;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--teal);
+  }
+  .route-list li:first-child::after {
+    content: "";
+    position: absolute; top: -1px; left: 0; right: 0;
+    height: 1px; background: var(--teal);
+    transform-origin: left;
+    animation: draw 900ms ease-out both;
+  }
+  @keyframes draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .chain {
+    display: block; font-weight: 600; font-size: 1rem; margin-bottom: 6px;
+  }
+  .chain small { color: var(--muted); font-weight: 400; }
+  .route-list p { margin: 0; color: var(--muted); font-size: 0.94rem; line-height: 1.55; }
+  .route-list p code {
+    font-size: 0.9em;
+    background: var(--teal-soft);
+    padding: 1px 5px;
+    color: #124740;
+  }
+
+  /* Findings */
+  .findings { padding: 64px 0 32px; }
+  .findings-note {
+    max-width: 72ch;
+    color: var(--muted);
+    margin: 0 0 6px;
+    font-size: 0.98rem;
+  }
+  .finding {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 2fr);
+    gap: 40px;
+    padding: 30px 0;
+    border-top: 1px solid var(--line);
+  }
+  .finding:last-of-type { border-bottom: 1px solid var(--line); }
+  .finding h3 {
+    margin: 0;
+    font-size: 1.18rem;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+  .finding .tag {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--brass);
+    font-weight: 600;
+  }
+  .finding-body p { margin: 0 0 12px; max-width: 68ch; }
+  .finding-body p:last-child { margin-bottom: 0; }
+  .finding-body .impact { color: var(--muted); }
+  .finding-body code {
+    font-size: 0.9em;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 1px 5px;
+  }
+
+  /* Pricing */
+  .pricing { padding: 64px 0 24px; }
+  .tiers {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    border: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .tier { padding: 32px; }
+  .tier + .tier { border-left: 1px solid var(--line); }
+  .tier h3 { margin: 0 0 4px; font-size: 1.1rem; letter-spacing: -0.02em; }
+  .price { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.04em; margin: 10px 0 18px; }
+  .price span { font-size: 0.9rem; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+  .tier ul { margin: 0; padding: 0; list-style: none; }
+  .tier li {
+    padding: 8px 0 8px 20px;
+    position: relative;
+    color: #2c3c44;
+    font-size: 0.96rem;
+    border-top: 1px solid var(--line);
+  }
+  .tier li:first-child { border-top: 0; }
+  .tier li::before {
+    content: "";
+    position: absolute; left: 0; top: 16px;
+    width: 7px; height: 7px; background: var(--teal);
+  }
+  .addons {
+    margin: 18px 0 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+    max-width: 74ch;
+  }
+
+  /* Method */
+  .method { padding: 56px 0 80px; }
+  .method-grid {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    gap: 48px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  .method h3 { margin: 0 0 10px; font-size: 1.05rem; }
+  .method p { margin: 0 0 14px; max-width: 68ch; color: #2c3c44; }
+  .method .small { color: var(--muted); font-size: 0.93rem; }
+
+  .cta {
+    background: var(--ink);
+    color: #eef3f4;
+    padding: 56px 0;
+  }
+  .cta .wrap { display: flex; justify-content: space-between; gap: 40px; align-items: center; flex-wrap: wrap; }
+  .cta h2 { color: #fff; margin: 0 0 8px; }
+  .cta p { margin: 0; color: #b9c8cd; max-width: 52ch; }
+  .cta .btn { background: var(--teal); border-color: var(--teal); }
+  .cta .btn:hover { background: #2a8b7f; border-color: #2a8b7f; }
+
+  footer.site {
+    padding: 26px 0 40px;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+  footer.site .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+
+  @media (max-width: 860px) {
+    .hero { padding-top: 48px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+    .facts { border-left-width: 2px; }
+    .route-head { flex-direction: column; align-items: flex-start; }
+    .route-list { grid-template-columns: 1fr; border-top: 0; }
+    .route-list li {
+      border-right: 0; border-top: 1px solid var(--line);
+      padding: 22px 0 24px 24px;
+    }
+    .route-list li:nth-child(2), .route-list li:last-child { padding-left: 24px; }
+    .route-list li::before { top: 28px; left: 0; }
+    .route-list li:first-child::after {
+      top: 0; bottom: 0; left: -1px; right: auto;
+      width: 1px; height: auto;
+      transform-origin: top;
+      animation: drawY 900ms ease-out both;
+    }
+    @keyframes drawY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+    .finding { grid-template-columns: 1fr; gap: 14px; }
+    .tiers { grid-template-columns: 1fr; }
+    .tier + .tier { border-left: 0; border-top: 1px solid var(--line); }
+    .method-grid { grid-template-columns: 1fr; gap: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap site-row">
+    <div class="wordmark">XCM<span>Audit</span></div>
+    <div class="site-note">Fixed-scope reviews for Polkadot integrations · <a href="https://github.com/ImBeasting/xcm-audit/issues/new">GitHub issues</a></div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1>The transfer succeeds. The numbers are wrong.</h1>
+        <p class="lede">Fixed-scope audits for teams shipping cross-chain transfers on Polkadot. Every finding arrives with the failing test that proves it, or it is labelled a hypothesis and not billed.</p>
+        <div class="actions">
+          <a class="btn" href="https://github.com/ImBeasting/xcm-audit/issues/new">Ask for a free finding</a>
+          <a class="link-quiet" href="#sample">Read a sample finding</a>
+        </div>
+      </div>
+      <aside class="facts">
+        <p><strong>117 public bounty reports</strong> against a production XCM SDK were read and clustered to build the checklist this audit runs on.</p>
+        <p><strong>Three failures reproduced</strong> in that SDK this week: a fee asset overridden silently, client leases never released, and signed calldata built from dry-run placeholders.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="route">
+    <div class="wrap">
+      <div class="route-head">
+        <h2>Where integrations break</h2>
+        <p>A transfer crosses three systems before it is signed. Each one has a failure mode that returns no error.</p>
+      </div>
+      <ol class="route-list">
+        <li>
+          <span class="chain">Origin <small>wallet or dApp</small></span>
+          <p>Fee asset resolution. An explicit choice is replaced by the account default on <code>Hydration</code>, and the quote silently switches asset.</p>
+        </li>
+        <li>
+          <span class="chain">Exchange <small>routing and quotes</small></span>
+          <p>Client lifecycle. Cloned APIs lease pooled connections that are never released; an auto-selected swap can leak more than twenty leases per call.</p>
+        </li>
+        <li>
+          <span class="chain">Destination <small>signed XCM</small></span>
+          <p>Calldata construction. On chains without <code>DryRunApi</code>, the final message can carry a placeholder fee amount of one whole token.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="findings" id="sample">
+    <div class="wrap">
+      <h2>What a finding looks like</h2>
+      <p class="findings-note">Across four public Polkadot wallets and transfer apps, the same checks found amounts truncated through a JS number, a destination-ED check comparing two different assets, and an agent swap tool that submitted only the first transaction of a two-leg route.</p>
+      <article class="finding">
+        <div>
+          <h3>Fee asset precedence</h3>
+          <span class="tag">High · reproduced</span>
+        </div>
+        <div class="finding-body">
+          <p>Two SDK implementations query <code>MultiTransactionPayment.AccountCurrencyMap</code> on Hydration and return the account's asset even when the caller passed a <code>feeAsset</code>. The third implementation guards against this; the other two were missed when the first was fixed.</p>
+          <p class="impact">Impact: the fee is quoted in, and returned as, an asset the caller did not choose. Three SDKs, two different answers for identical options. The fix is two lines; the regression test passes on one implementation and fails on the other two.</p>
+        </div>
+      </article>
+      <article class="finding">
+        <div>
+          <h3>Client lifecycle</h3>
+          <span class="tag">High · reproduced</span>
+        </div>
+        <div class="finding-body">
+          <p>Seven sdk-core helpers and the entire swap package clone an API and never disconnect. Only <code>disconnect()</code> decrements the pool's reference count, so single-use clients are treated as permanently in use.</p>
+          <p class="impact">Impact: connection churn, wasted keep-alive pings, and corrupted refcounts under sustained traffic. An auto-selected swap probes nine exchanges and leaks at least one client per candidate in a single call.</p>
+        </div>
+      </article>
+      <article class="finding">
+        <div>
+          <h3>Signed placeholders</h3>
+          <span class="tag">High · call-path proof</span>
+        </div>
+        <div class="finding-body">
+          <p>When the origin has no <code>DryRunApi</code>, fee computation returns <code>null</code> and the final type-and-then call is built as if it were a throwaway estimation pass: one whole fee token, half of it bought as execution, and an <code>AllCounted</code> filter.</p>
+          <p class="impact">Impact: on five chains, a transfer requires a whole extra token to be available, and the all-counted deposit can send the leftover fee asset to the recipient. The code comment calls it a dummy call that is "later dryRunned" — on these chains it is signed.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="pricing">
+    <div class="wrap">
+      <h2>Scope and price</h2>
+      <div class="tiers">
+        <div class="tier">
+          <h3>Integration audit</h3>
+          <p class="price">$350 <span>fixed</span></p>
+          <ul>
+            <li>Up to 5 findings</li>
+            <li>File, line, mechanism, user impact</li>
+            <li>Reproduction or call-path proof for each</li>
+            <li>30-minute walkthrough</li>
+            <li>Delivered in 5 business days</li>
+          </ul>
+        </div>
+        <div class="tier">
+          <h3>Audit and fixes</h3>
+          <p class="price">$750 <span>fixed</span></p>
+          <ul>
+            <li>10 findings, or 5 plus fixes</li>
+            <li>Patches with regression tests for the top 3</li>
+            <li>Re-check against your test suite</li>
+            <li>Walkthrough and written summary</li>
+            <li>Delivered in 10 business days</li>
+          </ul>
+        </div>
+      </div>
+      <p class="addons">Extra finding $60 · patch with test $120 · monthly re-audit of changed paths $400. Payment in USDC or by invoice. No retainers before the first audit.</p>
+    </div>
+  </section>
+
+  <section class="method">
+    <div class="wrap method-grid">
+      <div>
+        <h3>How the work is done</h3>
+        <p class="small">Read this before buying anything.</p>
+      </div>
+      <div>
+        <p>Analysis is performed with AI assistance and reviewed by a human before delivery. Every finding is traced through the real call path and, where possible, reproduced with a minimal test.</p>
+        <p>Findings that cannot be reproduced are labelled hypotheses and are not counted against the tier. There is no promise that an integration is bug-free afterwards, and no on-chain signing or custody of funds is involved.</p>
+        <p class="small">The checklist behind the audit is built from 117 public bounty reports against a production XCM SDK, each cited by number. It is not generic advice.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<section class="cta">
+  <div class="wrap">
+    <div>
+      <h2>Start with one finding, free</h2>
+      <p>Send the repository and the transfer path you care about. You get one verified finding before any payment.</p>
+    </div>
+    <a class="btn" href="https://github.com/ImBeasting/xcm-audit/issues/new">Request the free finding</a>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <span>XCM Audit — independent, fixed-scope reviews.</span>
+    <span>Checklist sources: 117 public bounty reports, 2026.</span>
+  </div>
+</footer>
+
+</body>
+</html>
