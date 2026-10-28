@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Four ways wallets silently corrupt cross-chain amounts · XCM Audit</title>
+<meta name="description" content="Four real wallet and transfer-app bugs where the signed amount differed from what the user typed, and how to find the same class in your own code.">
+<link rel="canonical" href="https://imbeasting.github.io/xcm-audit/writing/four-ways-wallets-corrupt-amounts.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Four ways wallets silently corrupt cross-chain amounts">
+<meta property="og:description" content="Four real wallet and transfer-app bugs where the signed amount differed from what the user typed, and how to find the same class in your own code.">
+<meta property="og:url" content="https://imbeasting.github.io/xcm-audit/writing/four-ways-wallets-corrupt-amounts.html">
+<meta property="og:site_name" content="XCM Audit">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Four ways wallets silently corrupt cross-chain amounts">
+<meta name="twitter:description" content="Four real wallet and transfer-app bugs where the signed amount differed from what the user typed, and how to find the same class in your own code.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #edf0f2; --panel: #f7f9fa; --ink: #16232b; --muted: #55666e;
+    --line: #c6d0d4; --teal: #1f6f66; --brass: #a97a24; --max: 760px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 17px; line-height: 1.68; -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--teal); text-underline-offset: 3px; }
+  a:focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; }
+  .wrap { width: min(100% - 40px, var(--max)); margin-inline: auto; }
+  header.site { padding: 26px 0 18px; border-bottom: 1px solid var(--line); }
+  .site-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px 24px; }
+  .wordmark { font-weight: 700; letter-spacing: -0.03em; font-size: 1.15rem; color: var(--ink); text-decoration: none; }
+  .wordmark span { color: var(--teal); }
+  .site-note { color: var(--muted); font-size: 0.9rem; }
+  article { padding: 48px 0 24px; }
+  h1 { font-family: "Newsreader", Georgia, serif; font-weight: 500; font-size: clamp(2rem, 4vw, 2.9rem); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 14px; }
+  h2 { font-family: "Newsreader", Georgia, serif; font-weight: 500; font-size: 1.55rem; line-height: 1.2; margin: 40px 0 10px; }
+  h3 { font-size: 1.1rem; margin: 28px 0 8px; }
+  p { margin: 0 0 16px; }
+  ul, ol { margin: 0 0 18px; padding-left: 22px; }
+  li { margin: 6px 0; }
+  code { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; font-size: 0.9em; overflow-wrap: anywhere; }
+  pre { background: #16232b; color: #edf0f2; padding: 16px 18px; border-radius: 6px; overflow-x: auto; margin: 0 0 20px; }
+  pre code { background: none; border: 0; padding: 0; color: inherit; font-size: 0.88em; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+  .byline { color: var(--muted); font-size: 0.92rem; margin: 0 0 28px; }
+  .cta { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px 22px; margin: 36px 0 8px; }
+  .cta h2 { margin: 0 0 8px; font-size: 1.25rem; }
+  .cta p { margin: 0 0 10px; }
+  footer.site { border-top: 1px solid var(--line); padding: 22px 0 40px; color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap site-row">
+    <a class="wordmark" href="../index.html">XCM <span>Audit</span></a>
+    <span class="site-note">Fixed-scope reviews for Polkadot integrations</span>
+  </div>
+</header>
+<main class="wrap">
+<article>
+<h1>Four ways wallets silently corrupt cross-chain amounts</h1>
+<p class="byline">Tyler Woods · 2026</p>
+<p>In four public Polkadot wallets and transfer apps, the same kind of bug appeared in four different places: the amount that was signed did not match the amount the user meant. None of them threw an error on the happy path. Each is a boundary between representations, and each is easy to check.</p>
+<h2>1. The amount becomes a JavaScript number</h2>
+<p>A user types <code>0.0000001</code> for an 18-decimal asset. The form parses it with <code>parseFloat</code>, the wallet passes the number to the transfer SDK, and <code>Number</code> serialises it as <code>1e-7</code>. viem's <code>parseUnits</code> rejects exponential notation, so the build throws; if the fee preview catches the error, the UI simply shows no fee.</p>
+<p>The same conversion also rounds: <code>Number('0.123456789012345678')</code> is <code>0.12345678901234568</code>, so a few base units change before encoding.</p>
+<p><strong>Check:</strong> the SDK accepts <code>string | number | bigint</code>. Keep the user's decimal string and call <code>parseUnits(amount, decimals)</code> directly. Reject <code>/e/i</code> before conversion as a backstop.</p>
+<h2>2. The amount is floored through a float</h2>
+<p>Another wallet computes:</p>
+<pre><code class="language-ts">BigInt(Math.floor(input * 10 ** decimals))</code></pre>
+<p>At 6 decimals, <code>2.01 * 10**6</code> is <code>2009999.999…</code>, so the encoded amount is <code>2009999</code>, one base unit short. <code>0.57</code> at 10 decimals has the same problem; at 18 decimals the float rounds either way. The input shows <code>2.01</code>, the signed amount is <code>2.009999</code>, and the confirmation formats the encoded value with three decimals and floor rounding, so it shows <code>2.009</code> and hides the discrepancy.</p>
+<p><strong>Check:</strong> grep for <code>Math.floor(</code> near <code>10 **</code> and for <code>BigInt(</code> near <code>Number(</code>. A string plus <code>parseUnits</code> eliminates the class.</p>
+<h2>3. The existential-deposit check compares two different assets</h2>
+<p>A multisig wallet blocks transfers with "Transfer amount does not meet destination existential deposit". The check is:</p>
+<pre><code class="language-ts">isEdSufficient: receivableAmount &gt;= destED</code></pre>
+<p><code>destED</code> is the <strong>fee</strong> asset's existential deposit, not the transferred token's, and the recipient's existing balance is ignored. Transferring 10 USDC on a route whose destination fee is paid in DOT compares <code>10_000_000</code> (6 decimals) to <code>10_000_000_000</code> (10 decimals) and disables the form. Sending 0.5 DOT to an account that already holds 100 DOT is blocked for the same reason.</p>
+<p><strong>Check:</strong> compare <code>balance + received - fee</code> against the ED of the <strong>transferred</strong> asset, and only when the fee asset and the transferred asset match. ParaSpell exposes this as <code>verifyEdOnDestination</code>; use it rather than re-deriving the rule.</p>
+<h2>4. Only the first transaction of a multi-leg route is submitted</h2>
+<p>An agent tool calls a router and submits <code>routerPlan[0].tx</code>. The router returns an array: for a cross-chain swap it pushes the origin→exchange transfer first, then the swap (and optional destination transfer). When the single-transaction <code>execute</code> path is filtered at the origin, the plan has two entries, and only the transfer is signed. The asset arrives on the exchange chain, the swap never happens, and the tool reports the first transaction's hash as success.</p>
+<p><strong>Check:</strong> if an API returns a plan or a batch, submit every entry in order and report success only when all of them succeed. A partial success is a failure with a refund path, not a success.</p>
+<h2>The shared shape</h2>
+<p>All four are conversions at a boundary:</p>
+<ul><li>user input → chain units,</li><li>float → integer,</li><li>fee asset → transferred asset,</li><li>plan → submitted transactions.</li></ul>
+<p>The arithmetic is never the hard part. The assumption that both sides represent the same thing is. A 20-minute pass that follows one amount from input to signature, and one route from plan to submission, finds more than any linter.</p>
+<p><em>I maintain a checklist built from 117 public XCM bounty reports read as of 25 October 2026, with a zero-dependency scanner for these shapes, included in the <a href="https://tylerwoods5.gumroad.com/l/xcm-preflight-pack">pre-flight pack</a>. If you want a fixed-scope review of your own integration, see the <a href="https://imbeasting.github.io/xcm-audit/">audit page</a>.</em></p>
+<hr>
+<p><em>AI assistance was used to draft this article. Every finding was checked against the cited code and the linked public report before publication.</em></p>
+<div class="cta">
+  <h2>Want this checked in your integration?</h2>
+  <p>Fixed-scope XCM audits with a failing test or call-path proof for every finding. The first verified finding is free.</p>
+  <p><a href="../index.html#contact">Request the free finding</a> · <a href="https://tylerwoods5.gumroad.com/l/xcm-preflight-pack">Pre-flight pack, $49</a></p>
+</div>
+</article>
+</main>
+<footer class="site">
+  <div class="wrap">XCM Audit · <a href="mailto:woods.d.tyler@gmail.com">woods.d.tyler@gmail.com</a> · <a href="../index.html">Back to the audit page</a></div>
+</footer>
+</body>
+</html>

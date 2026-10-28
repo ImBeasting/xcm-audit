@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>XCM Audit — fixed-scope reviews for Polkadot integrations</title>
 <meta name="description" content="Fixed-scope XCM integration audits for Polkadot teams. Every finding ships with the failing test that proves it.">
+<link rel="canonical" href="https://imbeasting.github.io/xcm-audit/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="XCM Audit, fixed-scope reviews for Polkadot integrations">
+<meta property="og:description" content="Fixed-scope XCM integration audits for Polkadot teams. Every finding ships with the failing test that proves it.">
+<meta property="og:url" content="https://imbeasting.github.io/xcm-audit/">
+<meta property="og:site_name" content="XCM Audit">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="XCM Audit, fixed-scope reviews for Polkadot integrations">
+<meta name="twitter:description" content="Fixed-scope XCM integration audits for Polkadot teams. Every finding ships with the failing test that proves it.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
@@ -170,6 +179,22 @@
     margin: 0 0 6px;
     font-size: 0.98rem;
   }
+  .writing-list {
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 0;
+    display: grid;
+    gap: 10px;
+  }
+  .writing-list a { font-weight: 500; font-size: 1.02rem; }
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 32px;
+    margin-top: 20px;
+  }
+  .faq-grid h3 { margin: 0 0 6px; font-size: 1.02rem; }
+  .faq-grid p { margin: 0; color: var(--muted); font-size: 0.97rem; }
   .finding {
     display: grid;
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 2fr);
@@ -286,6 +311,7 @@
     @keyframes drawY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
     .finding { grid-template-columns: 1fr; gap: 14px; }
     .tiers { grid-template-columns: 1fr; }
+    .faq-grid { grid-template-columns: 1fr; }
     .tier + .tier { border-left: 0; border-top: 1px solid var(--line); }
     .method-grid { grid-template-columns: 1fr; gap: 18px; }
   }
@@ -312,7 +338,7 @@
         </div>
       </div>
       <aside class="facts">
-        <p><strong>117 public bounty reports</strong> against a production XCM SDK were read and clustered to build the checklist this audit runs on.</p>
+        <p><strong>117 public bounty reports</strong> against a production XCM SDK were read and clustered to build the checklist this audit runs on, as of 25 October 2026. The issue corpus is 135 today.</p>
         <p><strong>Three failures traced</strong> in that SDK this week: a fee asset overridden silently, client leases never released, and signed calldata built from dry-run placeholders.</p>
       </aside>
     </div>
@@ -372,9 +398,52 @@
         </div>
         <div class="finding-body">
           <p>When the origin has no <code>DryRunApi</code>, fee computation returns <code>null</code> and the final type-and-then call is built as if it were a throwaway estimation pass: one whole fee token, half of it bought as execution, and an <code>AllCounted</code> filter.</p>
-          <p class="impact">Impact: on the five chains whose origins report no <code>DryRunApi</code> support, the signed call carries a one-token fee amount and an <code>AllCounted</code> filter, so the account needs that headroom before the call is submitted. Whether the leftover fee asset is refunded or deposited is not established. The code comment calls it a dummy call that is "later dryRunned"; on these chains it is signed.</p>
+          <p class="impact">Impact: on the five candidate chains whose origins report no <code>DryRunApi</code> support, the signed call carries a one-token fee amount and an <code>AllCounted</code> filter, so the account needs that headroom before the call is submitted. Whether the leftover fee asset is refunded or deposited is not established. The code comment calls it a dummy call that is "later dryRunned"; on these chains it is signed.</p>
         </div>
       </article>
+    </div>
+  </section>
+
+  <section class="findings" id="writing">
+    <div class="wrap">
+      <h2>Writing</h2>
+      <p class="findings-note">Two pieces on the failure modes this audit checks, drawn from the same corpus.</p>
+      <ul class="writing-list">
+        <li><a href="writing/seven-ways-xcm-transfers-fail.html">Seven ways an XCM transfer fails without an error</a></li>
+        <li><a href="writing/four-ways-wallets-corrupt-amounts.html">Four ways wallets silently corrupt cross-chain amounts</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="findings" id="faq">
+    <div class="wrap">
+      <h2>Questions</h2>
+      <div class="faq-grid">
+        <div>
+          <h3>How is this different from the public bug bounty?</h3>
+          <p>The bounty covers defects in the SDK itself. This audit covers how your integration uses it: your call paths, your assets, your failure handling. The report is yours, and nothing is disclosed publicly without your written agreement.</p>
+        </div>
+        <div>
+          <h3>What do you need from me?</h3>
+          <p>The repository and commit, the transfer paths and assets you care about, and whether you want the audit only or the audit with fixes. No credentials, no signing keys, no funds.</p>
+        </div>
+        <div>
+          <h3>What if you find nothing?</h3>
+          <p>The first verified finding is free. If the paid review finds nothing, the report still lists the paths checked, the checklist pass, and what could not be verified. Hypotheses are excluded from the finding count.</p>
+        </div>
+        <div>
+          <h3>How long does it take?</h3>
+          <p>Five business days after the scope is confirmed, with a 30-minute walkthrough. Audit plus fixes takes longer only when patches are included.</p>
+        </div>
+        <div>
+          <h3>Is it confidential?</h3>
+          <p>Yes. Findings are private to you, and public disclosure or a bounty submission is your decision. Analysis uses AI assistance and is reviewed by a human before delivery.</p>
+        </div>
+        <div>
+          <h3>What is not promised?</h3>
+          <p>No clean bill of health, no guarantee that the integration is bug-free afterwards, and no on-chain signing or custody. Every finding needs a failing test or a traced call path.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -418,13 +487,13 @@
       <div>
         <p>Analysis is performed with AI assistance and reviewed by a human before delivery. Every finding is traced through the real call path and, where possible, reproduced with a minimal test.</p>
         <p>Findings that cannot be reproduced are labelled hypotheses and are not counted against the tier. There is no promise that an integration is bug-free afterwards, and no on-chain signing or custody of funds is involved.</p>
-        <p class="small">The checklist behind the audit is built from 117 public bounty reports against a production XCM SDK, each cited by number. It is not generic advice.</p>
+        <p class="small">The checklist behind the audit is built from 117 public bounty reports read as of 25 October 2026 against a production XCM SDK, with the report numbers cited throughout. It is not generic advice.</p>
       </div>
     </div>
   </section>
 </main>
 
-<section class="cta">
+<section class="cta" id="contact">
   <div class="wrap">
     <div>
       <h2>Start with one finding, free</h2>
@@ -437,7 +506,7 @@
 <footer class="site">
   <div class="wrap">
     <span>XCM Audit — independent, fixed-scope reviews.</span>
-    <span>Checklist sources: 117 public bounty reports, 2026.</span>
+    <span>Checklist sources: 117 public bounty reports read as of 25 October 2026; issue corpus 135 on 28 October.</span>
   </div>
 </footer>
 

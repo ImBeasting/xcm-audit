@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://imbeasting.github.io/xcm-audit/sitemap.xml

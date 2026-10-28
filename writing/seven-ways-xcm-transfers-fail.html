@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seven ways an XCM transfer fails without an error · XCM Audit</title>
+<meta name="description" content="Seven failure modes that produce a valid-looking transaction with the wrong numbers, each drawn from a public bounty report against a production XCM SDK.">
+<link rel="canonical" href="https://imbeasting.github.io/xcm-audit/writing/seven-ways-xcm-transfers-fail.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Seven ways an XCM transfer fails without an error">
+<meta property="og:description" content="Seven failure modes that produce a valid-looking transaction with the wrong numbers, each drawn from a public bounty report against a production XCM SDK.">
+<meta property="og:url" content="https://imbeasting.github.io/xcm-audit/writing/seven-ways-xcm-transfers-fail.html">
+<meta property="og:site_name" content="XCM Audit">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Seven ways an XCM transfer fails without an error">
+<meta name="twitter:description" content="Seven failure modes that produce a valid-looking transaction with the wrong numbers, each drawn from a public bounty report against a production XCM SDK.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #edf0f2; --panel: #f7f9fa; --ink: #16232b; --muted: #55666e;
+    --line: #c6d0d4; --teal: #1f6f66; --brass: #a97a24; --max: 760px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 17px; line-height: 1.68; -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--teal); text-underline-offset: 3px; }
+  a:focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; }
+  .wrap { width: min(100% - 40px, var(--max)); margin-inline: auto; }
+  header.site { padding: 26px 0 18px; border-bottom: 1px solid var(--line); }
+  .site-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px 24px; }
+  .wordmark { font-weight: 700; letter-spacing: -0.03em; font-size: 1.15rem; color: var(--ink); text-decoration: none; }
+  .wordmark span { color: var(--teal); }
+  .site-note { color: var(--muted); font-size: 0.9rem; }
+  article { padding: 48px 0 24px; }
+  h1 { font-family: "Newsreader", Georgia, serif; font-weight: 500; font-size: clamp(2rem, 4vw, 2.9rem); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 14px; }
+  h2 { font-family: "Newsreader", Georgia, serif; font-weight: 500; font-size: 1.55rem; line-height: 1.2; margin: 40px 0 10px; }
+  h3 { font-size: 1.1rem; margin: 28px 0 8px; }
+  p { margin: 0 0 16px; }
+  ul, ol { margin: 0 0 18px; padding-left: 22px; }
+  li { margin: 6px 0; }
+  code { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; font-size: 0.9em; overflow-wrap: anywhere; }
+  pre { background: #16232b; color: #edf0f2; padding: 16px 18px; border-radius: 6px; overflow-x: auto; margin: 0 0 20px; }
+  pre code { background: none; border: 0; padding: 0; color: inherit; font-size: 0.88em; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+  .byline { color: var(--muted); font-size: 0.92rem; margin: 0 0 28px; }
+  .cta { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px 22px; margin: 36px 0 8px; }
+  .cta h2 { margin: 0 0 8px; font-size: 1.25rem; }
+  .cta p { margin: 0 0 10px; }
+  footer.site { border-top: 1px solid var(--line); padding: 22px 0 40px; color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap site-row">
+    <a class="wordmark" href="../index.html">XCM <span>Audit</span></a>
+    <span class="site-note">Fixed-scope reviews for Polkadot integrations</span>
+  </div>
+</header>
+<main class="wrap">
+<article>
+<h1>Seven ways an XCM transfer fails without an error</h1>
+<p class="byline">Tyler Woods · 2026</p>
+<p>A cross-chain transfer is a chain of assumptions: that the amount survived every decimal conversion, that the fee asset is the one the user chose, that the destination balance check used the right baseline, and that the client it was built on is still alive. When one of those is wrong, nothing throws. You get a valid-looking transaction with the wrong numbers.</p>
+<p>These seven mechanisms are drawn from 117 public bounty reports read as of 25 October 2026 against a production XCM SDK. Every one shipped, passed review, and reached users.</p>
+<h2>1. The fee asset is silently replaced</h2>
+<p>On Hydration, the SDK asks the chain which asset the account pays fees in (<code>MultiTransactionPayment.AccountCurrencyMap</code>) and uses that for the quote. If the caller passed an explicit <code>feeAsset</code>, the explicit value must win. In one SDK implementation it did; in two others the guard was missing, so the account default overrode the caller.</p>
+<p>The bug hid behind an incomplete fix: the first implementation got <code>|| feeAsset</code>, the siblings were not updated. Three SDKs, two different answers for identical input.</p>
+<p><strong>Check:</strong> find every fee-asset resolver. Confirm an explicit asset short-circuits the account lookup on <em>every</em> implementation, not just the one you use.</p>
+<h2>2. Slippage is a shared option some implementations ignore</h2>
+<p><code>slippagePct</code> sits in the shared options type. One exchange reads it and applies a haircut to the quote; another returns the raw quote no matter what the user sets. The quote and the execution then disagree by exactly the amount the user thought they were protected against.</p>
+<p><strong>Check:</strong> for each exchange implementation, assert that the quote changes when slippage changes. A test that passes <code>'5'</code>, <code>'0'</code>, and <code>'200'</code> and gets the same number is a failing test.</p>
+<h2>3. A placeholder becomes the signed fee amount</h2>
+<p>When an origin has no <code>DryRunApi</code>, fee computation can return <code>null</code>. If the final call is built with that <code>null</code>, and the builder treats <code>null</code> as "this is the throwaway estimation pass", the signed message carries the estimation placeholder: one whole fee token, <code>BuyExecution</code> of half of it, and an <code>AllCounted</code> filter. The code comment calls it a dummy call "later dryRunned". On these chains it is signed.</p>
+<p><strong>Check:</strong> distinguish "fees unavailable" from "fee-estimation pass" with an explicit type, and test the no-DryRunApi path all the way to the serialized call.</p>
+<h2>4. Cloned clients are never released</h2>
+<p><code>clone()</code> + <code>init()</code> leases a pooled connection and increments a reference count. Only <code>disconnect()</code> decrements it. A helper that clones, reads a balance, and returns without disconnecting leaves the pool believing the client is in use forever: the entry is extended at TTL, the socket is destroyed while the count is still non-zero, and eviction ranking starts protecting the leaked entries.</p>
+<p><strong>Check:</strong> grep every <code>clone()</code>; walk to the enclosing function; confirm a <code>disconnect()</code> in a <code>finally</code>. Do the same for per-candidate clients in routing code; an auto-selected swap can create one client per exchange per call.</p>
+<h2>5. The existential deposit is checked against the wrong baseline</h2>
+<p>The question is "will the recipient end at or above the existential deposit?" The comparison is <code>balance + received - fee</code> against <code>ED</code>, or equivalently <code>received - fee</code> against <code>ED - balance</code> when the balance is below the ED. Comparing the incoming amount against the full ED reports a false negative for anyone who already holds part of it, and using <code>&gt;</code> instead of <code>&gt;=</code> reports one at exactly the ED.</p>
+<p><strong>Check:</strong> write three tests: balance zero, balance partway to the ED, and balance such that the result lands exactly on the ED.</p>
+<h2>6. Locations are compared as JSON text</h2>
+<p>Two locations are the same location. Comparing <code>JSON.stringify(a) === JSON.stringify(b)</code> makes the answer depend on key order, whitespace, and whether a junction value is <code>41</code>, <code>"41"</code>, or <code>"0x29"</code>. It will match in your tests and fail for a user who pasted the same location in a different order.</p>
+<p><strong>Check:</strong> canonicalise before comparing, and test the same location with reversed key order, number versus numeric string, and <code>Here</code> versus <code>{ Here: null }</code>.</p>
+<h2>7. A field is accepted, validated, and dropped</h2>
+<p>The DTO takes <code>isFeeAsset</code>, <code>disableFallback</code>, or a custom-chain option, the validator accepts it, and the service never reads it. No error; the transfer is built without the option. This is the most common shape in the corpus because no type checker catches an unused required property.</p>
+<p><strong>Check:</strong> for every field on a public options object, find its read site. If there is none, it is either removeable or a bug.</p>
+<hr>
+<h2>The pattern behind all seven</h2>
+<p>Every one is a boundary between two representations: user input and chain units, explicit option and account default, quote and execution, dry-run placeholder and final calldata, reference count and actual use. The bug is never in the arithmetic; it is in the assumption that the two sides agree.</p>
+<p>The fastest audit is to pick one transfer path and follow the value across every boundary, out loud, in the code. That finds more than any linter.</p>
+<p><em>If you want the checklist I use (10 sections, 40 checks, each citing the real report that documents the mechanism), it is included in the <a href="https://tylerwoods5.gumroad.com/l/xcm-preflight-pack">pre-flight pack</a>. For a fixed-scope review of your own integration, see the <a href="https://imbeasting.github.io/xcm-audit/">audit page</a>.</em></p>
+<hr>
+<p><em>AI assistance was used to draft this article. Every finding was checked against the cited code and the linked public report before publication.</em></p>
+<div class="cta">
+  <h2>Want this checked in your integration?</h2>
+  <p>Fixed-scope XCM audits with a failing test or call-path proof for every finding. The first verified finding is free.</p>
+  <p><a href="../index.html#contact">Request the free finding</a> · <a href="https://tylerwoods5.gumroad.com/l/xcm-preflight-pack">Pre-flight pack, $49</a></p>
+</div>
+</article>
+</main>
+<footer class="site">
+  <div class="wrap">XCM Audit · <a href="mailto:woods.d.tyler@gmail.com">woods.d.tyler@gmail.com</a> · <a href="../index.html">Back to the audit page</a></div>
+</footer>
+</body>
+</html>
