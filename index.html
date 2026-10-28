@@ -313,7 +313,7 @@
       </div>
       <aside class="facts">
         <p><strong>117 public bounty reports</strong> against a production XCM SDK were read and clustered to build the checklist this audit runs on.</p>
-        <p><strong>Three failures reproduced</strong> in that SDK this week: a fee asset overridden silently, client leases never released, and signed calldata built from dry-run placeholders.</p>
+        <p><strong>Three failures traced</strong> in that SDK this week: a fee asset overridden silently, client leases never released, and signed calldata built from dry-run placeholders.</p>
       </aside>
     </div>
   </section>
@@ -361,7 +361,7 @@
           <span class="tag">High · reproduced</span>
         </div>
         <div class="finding-body">
-          <p>Seven sdk-core helpers and the entire swap package clone an API and never disconnect. Only <code>disconnect()</code> decrements the pool's reference count, so single-use clients are treated as permanently in use.</p>
+          <p>Ten sdk-core call sites and six swap call sites clone an API and never disconnect. Only <code>disconnect()</code> decrements the pool's reference count, so single-use clients are treated as permanently in use.</p>
           <p class="impact">Impact: connection churn, wasted keep-alive pings, and corrupted refcounts under sustained traffic. An auto-selected swap probes nine exchanges and leaks at least one client per candidate in a single call.</p>
         </div>
       </article>
@@ -372,7 +372,7 @@
         </div>
         <div class="finding-body">
           <p>When the origin has no <code>DryRunApi</code>, fee computation returns <code>null</code> and the final type-and-then call is built as if it were a throwaway estimation pass: one whole fee token, half of it bought as execution, and an <code>AllCounted</code> filter.</p>
-          <p class="impact">Impact: on five chains, a transfer requires a whole extra token to be available, and the all-counted deposit can send the leftover fee asset to the recipient. The code comment calls it a dummy call that is "later dryRunned" — on these chains it is signed.</p>
+          <p class="impact">Impact: on the five chains whose origins report no <code>DryRunApi</code> support, the signed call carries a one-token fee amount and an <code>AllCounted</code> filter, so the account needs that headroom before the call is submitted. Whether the leftover fee asset is refunded or deposited is not established. The code comment calls it a dummy call that is "later dryRunned"; on these chains it is signed.</p>
         </div>
       </article>
     </div>
