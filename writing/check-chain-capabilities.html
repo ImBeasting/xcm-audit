@@ -80,7 +80,7 @@
 <li><code>XcmPaymentApi</code>. The fee-query interface the SDK prefers when it exists. Without it, the SDK uses <code>paymentInfo</code> or dry run instead, and some execution paths check the flag before trusting a fee from this source.</li>
 </ul>
 <h2>Run it</h2>
-<p>The script is <a href="../tools/check-chain-capabilities.mjs">check-chain-capabilities.mjs</a>. It uses <code>@paraspell/sdk</code> from npm and connects to each chain's default endpoint.</p>
+<p>The script is <a href="../tools/check-chain-capabilities.mjs">check-chain-capabilities.mjs</a>, also published at <a href="https://github.com/ImBeasting/xcm-capability-checker">github.com/ImBeasting/xcm-capability-checker</a> with the 45-chain data and an MIT license. It uses <code>@paraspell/sdk</code> from npm and connects to each chain's default endpoint.</p>
 <pre><code>npm install @paraspell/sdk
 node check-chain-capabilities.mjs Hydration Peaq Heima BifrostPolkadot</code></pre>
 <h2>Example output</h2>
