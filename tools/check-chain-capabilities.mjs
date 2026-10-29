@@ -1,83 +1,81 @@
 #!/usr/bin/env node
-/**
- * Check what a Substrate chain exposes for XCM integration.
- *
- * The XCM SDK needs specific pallets, methods and runtime APIs. A chain can look
- * connected and still reject a transfer because one of them is missing. This
- * prints the four that decide whether a route can be built and dry run.
- *
- * Usage:
- *   npm install @paraspell/sdk
- *   node check-chain-capabilities.mjs Centrifuge Pendulum Peaq Heima
- */
+import { Builder } from '@paraspell/sdk'
 
-import { Builder } from '@paraspell/sdk';
+const METHODS = [
+  'transfer_assets_using_type_and_then',
+  'limited_reserve_transfer_assets',
+  'reserve_transfer_assets',
+  'limited_teleport_assets',
+]
+const RUNTIME_APIS = [
+  ['DryRunApi', 'dry_run_call'],
+  ['XcmPaymentApi', 'query_xcm_weight'],
+]
 
-const TYPE_AND_THEN = 'transfer_assets_using_type_and_then';
-const pad = (value, width) => String(value).padEnd(width);
+const fmt = (v) => (v === true ? 'yes' : v === false ? 'no' : '?')
 
-const chains = process.argv.slice(2);
-
-if (chains.length === 0) {
-  console.error('Usage: node check-chain-capabilities.mjs <chain> [chain ...]');
-  process.exit(1);
+const classify = (error) => {
+  const msg = error instanceof Error ? error.message : String(error)
+  if (/not found/i.test(msg)) return false
+  if (/Incompatible runtime entry/i.test(msg)) return true
+  return null
 }
 
-const header = [
-  pad('chain', 18),
-  pad('pallet', 14),
-  pad('typeThen', 10),
-  pad('transferAssets', 16),
-  pad('DryRunApi', 11),
-  pad('XcmPaymentApi', 15),
-  'native',
-].join('');
-
-console.log(header);
-
-for (const chain of chains) {
-  const api = Builder().from(chain).api;
-  let row;
-
+const probe = async (fn) => {
   try {
-    await api.init(chain);
-
-    const pallet = api.hasPallet(chain, 'XcmPallet') ? 'XcmPallet' : 'PolkadotXcm';
-    const typeThen = await api.hasMethod(pallet, TYPE_AND_THEN);
-    const transferAssets = await api.hasMethod(pallet, 'transfer_assets');
-    const dryRun = api.hasDryRunSupport(chain);
-    const paymentApi = await api.hasRuntimeApi('XcmPaymentApi').catch(() => false);
-    const props = await api.getSystemProperties();
-
-    row = [
-      pad(chain, 18),
-      pad(pallet, 14),
-      pad(typeThen ? 'yes' : 'no', 10),
-      pad(transferAssets ? 'yes' : 'no', 16),
-      pad(dryRun ? 'yes' : 'no', 11),
-      pad(paymentApi ? 'yes' : 'no', 15),
-      `${props?.tokenSymbol ?? '?'} (${props?.tokenDecimals ?? '?'} decimals)`,
-    ].join('');
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    row = [
-      pad(chain, 18),
-      pad('-', 14),
-      pad('-', 10),
-      pad('-', 16),
-      pad('-', 11),
-      pad('-', 15),
-      `error: ${message.slice(0, 80)}`,
-    ].join('');
-  } finally {
+    await fn()
+    return true
+  } catch (e) {
+    const first = classify(e)
+    if (first !== null) return first
+    await new Promise((r) => setTimeout(r, 1500))
     try {
-      await api.disconnect(true);
-    } catch {
-      /* ignore */
+      await fn()
+      return true
+    } catch (e2) {
+      return classify(e2)
     }
   }
-
-  console.log(row);
 }
 
-process.exit(0);
+const chains = process.argv.slice(2)
+if (chains.length === 0) {
+  console.error('Usage: node check-chain-capabilities.mjs <chain> [chain ...]')
+  process.exit(1)
+}
+
+for (const chain of chains) {
+  const api = Builder().from(chain).api
+  try {
+    await api.init(chain)
+    const pallet = api.hasPallet(chain, 'XcmPallet') ? 'XcmPallet' : 'PolkadotXcm'
+    const props = await api.getSystemProperties()
+    console.log(`\n${chain} (${pallet}, ${props?.tokenSymbol ?? '?'} ${props?.tokenDecimals ?? '?'} decimals)`)
+
+    for (const method of METHODS) {
+      const result = api.untypedApi
+        ? await probe(() => api.untypedApi.tx[pallet][method]().getEncodedData())
+        : await api.hasMethod(pallet, method)
+      console.log(`  ${method.padEnd(34)} ${fmt(result)}`)
+    }
+
+    for (const [name, method] of RUNTIME_APIS) {
+      const live = api.untypedApi
+        ? await probe(() => api.untypedApi.apis[name][method]())
+        : await api.hasRuntimeApi(name)
+      const registry =
+        name === 'DryRunApi'
+          ? api.hasDryRunSupport(chain)
+          : api.hasXcmPaymentApiSupport(chain)
+      console.log(`  ${name.padEnd(34)} live ${fmt(live).padEnd(4)} registry ${registry ? 'yes' : 'no'}`)
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.log(`\n${chain} (error: ${message.slice(0, 100)})`)
+  } finally {
+    try {
+      await api.disconnect(true)
+    } catch {}
+  }
+}
+process.exit(0)

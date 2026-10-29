@@ -65,38 +65,69 @@
 <article>
 <h1>Check what a chain exposes before you trust an XCM route</h1>
 <p class="byline">Tyler Woods · 2026</p>
-<p>A chain can accept a WebSocket connection, answer a balance query, and still have no way to build the transfer you asked for. The failure surfaces as a thrown error at build time, after the amount and the recipient are set, and the message usually names a method rather than the missing capability.</p>
-<p>Four runtime checks decide whether a route can be built, fee-estimated, and dry run. They take one command to print.</p>
-<h2>1. The baseline transfer method</h2>
-<p>The SDK needs the chain's XCM pallet, <code>PolkadotXcm</code> or <code>XcmPallet</code>, and the <code>transfer_assets</code> extrinsic. Without either, the ordinary asset-transfer path has nothing to call.</p>
-<h2>2. <code>transfer_assets_using_type_and_then</code></h2>
-<p>Some routes cannot use the baseline call. A relay asset on an origin that does not reserve it needs type-and-then to place the fee and the transferred asset in one message. Some external-asset routes cross the same branch. When the method is missing, the SDK throws <code>TypeAndThenUnavailableError</code> for those routes instead of building an invalid call. That is the correct failure. It is still a route that will not work.</p>
-<h2>3. <code>DryRunApi</code></h2>
-<p>Dry run is how the SDK turns a built call into a fee and a success check. Without it, fee estimation falls back to other sources, and the type-and-then path loses the pass that would have replaced its fee placeholder. On chains that also lack the payment API, a transfer can be built with a fee it cannot verify. The public report on the placeholder path is <a href="https://github.com/paraspell/xcm-tools/issues/2353">xcm-tools#2353</a>.</p>
-<h2>4. <code>XcmPaymentApi</code></h2>
-<p>This is the fee-query interface the SDK prefers when it exists. Without it, the SDK uses <code>paymentInfo</code> or dry run instead, and some execution paths check the flag before trusting a fee from this source.</p>
+<p>A chain can accept a WebSocket connection, answer a balance query, and still have no way to build the transfer you asked for. The failure surfaces at build or encode time, after the amount and the recipient are set, and the message names a method rather than the missing capability.</p>
+<p>Four transfer methods and two runtime APIs decide whether a route can be built, fee-estimated and dry run. One command prints them, with a live probe next to the flag the SDK actually uses.</p>
+<h2>The four transfer methods</h2>
+<p>The XCM SDK can call four extrinsics on <code>PolkadotXcm</code> or <code>XcmPallet</code>. Each covers a different route shape.</p>
+<ul>
+<li><code>transfer_assets_using_type_and_then</code>. Required for a relay asset on an origin that does not reserve it, and reached by some external-asset routes. When it is missing, those routes throw <code>TypeAndThenUnavailableError</code> instead of building an invalid call.</li>
+<li><code>limited_reserve_transfer_assets</code> and <code>reserve_transfer_assets</code>. The reserve-transfer paths for foreign assets. The limited form carries a weight limit and is the one the SDK prefers.</li>
+<li><code>limited_teleport_assets</code>. Teleports, used for trusted-chain routes where the asset is native on both sides.</li>
+</ul>
+<h2>The two runtime APIs</h2>
+<ul>
+<li><code>DryRunApi</code>. How the SDK turns a built call into a fee and a success check. Without it, fee estimation falls back to other sources, and the type-and-then path loses the pass that would have replaced its fee placeholder. The public report on that path is <a href="https://github.com/paraspell/xcm-tools/issues/2353">xcm-tools#2353</a>.</li>
+<li><code>XcmPaymentApi</code>. The fee-query interface the SDK prefers when it exists. Without it, the SDK uses <code>paymentInfo</code> or dry run instead, and some execution paths check the flag before trusting a fee from this source.</li>
+</ul>
 <h2>Run it</h2>
 <p>The script is <a href="../tools/check-chain-capabilities.mjs">check-chain-capabilities.mjs</a>. It uses <code>@paraspell/sdk</code> from npm and connects to each chain's default endpoint.</p>
 <pre><code>npm install @paraspell/sdk
-node check-chain-capabilities.mjs Centrifuge Pendulum Peaq Heima</code></pre>
+node check-chain-capabilities.mjs Hydration Peaq Heima BifrostPolkadot</code></pre>
 <h2>Example output</h2>
-<p>Run against four Polkadot parachains on 29 October 2026:</p>
-<pre><code>chain             pallet        typeThen  transferAssets  DryRunApi  XcmPaymentApi  native
-Centrifuge        PolkadotXcm   no        yes             no         no             CFG (18 decimals)
-Pendulum          PolkadotXcm   no        yes             no         no             PEN (12 decimals)
-Peaq              PolkadotXcm   yes       yes             no         no             PEAQ (18 decimals)
-Heima             PolkadotXcm   yes       yes             no         no             HEI (18 decimals)</code></pre>
+<p>Run against four live Polkadot parachains on 29 October 2026:</p>
+<pre><code>Hydration (PolkadotXcm, HDX 12 decimals)
+  transfer_assets_using_type_and_then yes
+  limited_reserve_transfer_assets    yes
+  reserve_transfer_assets            yes
+  limited_teleport_assets            yes
+  DryRunApi                          live yes  registry yes
+  XcmPaymentApi                      live yes  registry yes
+
+Peaq (PolkadotXcm, PEAQ 18 decimals)
+  transfer_assets_using_type_and_then yes
+  limited_reserve_transfer_assets    yes
+  reserve_transfer_assets            yes
+  limited_teleport_assets            yes
+  DryRunApi                          live no   registry no
+  XcmPaymentApi                      live no   registry no
+
+Heima (PolkadotXcm, HEI 18 decimals)
+  transfer_assets_using_type_and_then yes
+  limited_reserve_transfer_assets    yes
+  reserve_transfer_assets            yes
+  limited_teleport_assets            yes
+  DryRunApi                          live no   registry no
+  XcmPaymentApi                      live no   registry no
+
+BifrostPolkadot (PolkadotXcm, BNC 12 decimals)
+  transfer_assets_using_type_and_then yes
+  limited_reserve_transfer_assets    yes
+  reserve_transfer_assets            yes
+  limited_teleport_assets            yes
+  DryRunApi                          live yes  registry yes
+  XcmPaymentApi                      live yes  registry yes</code></pre>
 <h2>How to read it</h2>
 <ul>
-<li><strong>typeThen no, transferAssets yes.</strong> Ordinary transfers can be built. Relay-asset routes from that chain stop at <code>TypeAndThenUnavailableError</code> unless the chain reserves the asset and the SDK takes the reserve path.</li>
-<li><strong>typeThen yes, DryRunApi no.</strong> The type-and-then branch can build, but it cannot dry run for fees. This is the combination behind the placeholder report above.</li>
-<li><strong>XcmPaymentApi no.</strong> Fee figures come from another source. Check which one for the path you care about before trusting a quote.</li>
-<li><strong>Every column yes.</strong> The chain exposes the surface. It does not mean a given asset has a working route.</li>
+<li><strong>Method no.</strong> The SDK falls back to another transfer path, or throws for routes that need the missing method. It does not build the call.</li>
+<li><strong>Runtime API no.</strong> Fee estimation and dry run fall back. For type-and-then, a missing <code>DryRunApi</code> is the path behind the placeholder report above.</li>
+<li><strong>Live and registry disagree.</strong> The SDK follows the registry, not the live probe. If a chain enabled a runtime API after the asset map was generated, the SDK still takes the fallback. Update <code>@paraspell/assets</code> or pass a custom chain with the correct flag.</li>
+<li><strong>A question mark.</strong> The probe hit an error it could not classify, usually a transient connection failure. Run it again.</li>
+<li><strong>Everything missing.</strong> Check the endpoint. The probe reads the metadata the SDK would use, and a provider stuck at an old block serves an old metadata set. That is a provider problem, not a chain problem.</li>
 </ul>
 <h2>What it does not check</h2>
 <p>Asset listings, decimals, existential deposits, the destination's support for the asset, the reserve chain, XCM version negotiation, and whether a route exists at all. Those come from the asset map and the destination, not from the origin's metadata. A green table is a necessary condition, not a route test.</p>
 <hr>
-<p><em>AI assistance was used to draft this article. The example output is from a real run and the method names are checked against the SDK source.</em></p>
+<p><em>AI assistance was used to draft this article. The example output is from a real run, and the method names are taken from the SDK's own transfer type.</em></p>
 <div class="cta">
   <h2>Want the whole surface checked?</h2>
   <p>Fixed-scope XCM audits with a failing test or call-path proof for every finding. The first verified finding is free.</p>
