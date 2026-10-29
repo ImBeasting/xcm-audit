@@ -16,6 +16,12 @@ Live page: https://imbeasting.github.io/xcm-audit/
 A free public teardown of a live wallet integration bug:
 https://github.com/swush-labs/swush-app/issues/73
 
+## Tools
+
+- [XCM capability checker](https://github.com/ImBeasting/xcm-capability-checker): prints the four XCM
+  transfer methods and two runtime APIs a Substrate chain exposes, with the 45-chain matrix from
+  2026-10-29 as JSON and CSV. MIT licensed.
+
 ## Writing
 
 - [Seven ways an XCM transfer fails without an error](https://imbeasting.github.io/xcm-audit/writing/seven-ways-xcm-transfers-fail.html)
