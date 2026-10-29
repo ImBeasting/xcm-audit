@@ -395,11 +395,11 @@
       <article class="finding">
         <div>
           <h3>Signed placeholders</h3>
-          <span class="tag">High · call-path proof</span>
+          <span class="tag">Medium · call-path proof</span>
         </div>
         <div class="finding-body">
           <p>When the origin has no <code>DryRunApi</code>, fee computation returns <code>null</code> and the final type-and-then call is built as if it were a throwaway estimation pass: one whole fee token, half of it bought as execution, and an <code>AllCounted</code> filter.</p>
-          <p class="impact">Impact: on the five candidate chains whose origins report no <code>DryRunApi</code> support, the signed call carries a one-token fee amount and an <code>AllCounted</code> filter, so the account needs that headroom before the call is submitted. Whether the leftover fee asset is refunded or deposited is not established. The code comment calls it a dummy call that is "later dryRunned"; on these chains it is signed.</p>
+          <p class="impact">Impact: on the two chains that report no <code>DryRunApi</code> support and do expose <code>transfer_assets_using_type_and_then</code> (Peaq and Heima, checked against the live runtimes), a custom asset with a relay or external location reaches this path. The signed call then carries a one-token fee amount and an <code>AllCounted</code> filter, so the account needs that headroom before the call is submitted. Whether the leftover fee asset is refunded or deposited is not established. The code comment calls it a dummy call that is "later dryRunned"; on this path it is signed.</p>
         </div>
       </article>
     </div>
