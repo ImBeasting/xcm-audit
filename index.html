@@ -388,7 +388,7 @@
           <span class="tag">High · reproduced</span>
         </div>
         <div class="finding-body">
-          <p>Ten sdk-core call sites and six swap call sites clone an API and never disconnect. Only <code>disconnect()</code> decrements the pool's reference count, so single-use clients are treated as permanently in use.</p>
+          <p>Sixteen call sites clone an API and never disconnect: seven sdk-core transfer helpers, three API-layer fee fallbacks, and six swap sites. Only <code>disconnect()</code> decrements the pool's reference count, so single-use clients are treated as permanently in use.</p>
           <p class="impact">Impact: connection churn, wasted keep-alive pings, and corrupted refcounts under sustained traffic. An auto-selected swap probes nine exchanges and leaks at least one client per candidate in a single call.</p>
         </div>
       </article>
