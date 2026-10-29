@@ -116,6 +116,7 @@ BifrostPolkadot (PolkadotXcm, BNC 12 decimals)
   limited_teleport_assets            yes
   DryRunApi                          live yes  registry yes
   XcmPaymentApi                      live yes  registry yes</code></pre>
+<p>All 45 chains in the SDK list, checked on 29 October 2026: <a href="xcm-capability-matrix.html">the capability matrix</a>. The exceptions are Pendulum (no type-and-then) and Heima, HeimaPaseo, Peaq and Pendulum (no DryRunApi or XcmPaymentApi).</p>
 <h2>How to read it</h2>
 <ul>
 <li><strong>Method no.</strong> The SDK falls back to another transfer path, or throws for routes that need the missing method. It does not build the call.</li>

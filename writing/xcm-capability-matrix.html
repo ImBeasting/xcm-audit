@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XCM capability matrix: 45 chains, checked live · XCM Audit</title>
+<meta name="description" content="Live results for 45 Substrate chains: which expose the four XCM transfer methods and the DryRunApi and XcmPaymentApi runtime APIs, checked on 29 October 2026.">
+<link rel="canonical" href="https://imbeasting.github.io/xcm-audit/writing/xcm-capability-matrix.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="XCM capability matrix: 45 chains, checked live">
+<meta property="og:description" content="Live results for 45 Substrate chains: which expose the four XCM transfer methods and the DryRunApi and XcmPaymentApi runtime APIs, checked on 29 October 2026.">
+<meta property="og:url" content="https://imbeasting.github.io/xcm-audit/writing/xcm-capability-matrix.html">
+<meta property="og:site_name" content="XCM Audit">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="XCM capability matrix: 45 chains, checked live">
+<meta name="twitter:description" content="Live results for 45 Substrate chains: which expose the four XCM transfer methods and the DryRunApi and XcmPaymentApi runtime APIs, checked on 29 October 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #edf0f2; --panel: #f7f9fa; --ink: #16232b; --muted: #55666e;
+    --line: #c6d0d4; --teal: #1f6f66; --brass: #a97a24; --max: 760px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 17px; line-height: 1.68; -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--teal); text-underline-offset: 3px; }
+  a:focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; }
+  .wrap { width: min(100% - 40px, var(--max)); margin-inline: auto; }
+  header.site { padding: 26px 0 18px; border-bottom: 1px solid var(--line); }
+  .site-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px 24px; }
+  .wordmark { font-weight: 700; letter-spacing: -0.03em; font-size: 1.15rem; color: var(--ink); text-decoration: none; }
+  .wordmark span { color: var(--teal); }
+  .site-note { color: var(--muted); font-size: 0.9rem; }
+  article { padding: 48px 0 24px; }
+  h1 { font-family: "Newsreader", Georgia, serif; font-weight: 500; font-size: clamp(2rem, 4vw, 2.9rem); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 14px; }
+  h2 { font-family: "Newsreader", Georgia, serif; font-weight: 500; font-size: 1.55rem; line-height: 1.2; margin: 40px 0 10px; }
+  h3 { font-size: 1.1rem; margin: 28px 0 8px; }
+  p { margin: 0 0 16px; }
+  ul, ol { margin: 0 0 18px; padding-left: 22px; }
+  li { margin: 6px 0; }
+  code { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; font-size: 0.9em; overflow-wrap: anywhere; }
+  pre { background: #16232b; color: #edf0f2; padding: 16px 18px; border-radius: 6px; overflow-x: auto; margin: 0 0 20px; }
+  pre code { background: none; border: 0; padding: 0; color: inherit; font-size: 0.88em; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+  .byline { color: var(--muted); font-size: 0.92rem; margin: 0 0 28px; }
+  .cta { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px 22px; margin: 36px 0 8px; }
+  .cta h2 { margin: 0 0 8px; font-size: 1.25rem; }
+  .cta p { margin: 0 0 10px; }
+  footer.site { border-top: 1px solid var(--line); padding: 22px 0 40px; color: var(--muted); font-size: 0.9rem; }
+  .matrix { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 18px 0 24px; }
+  .matrix th, .matrix td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+  .matrix th { background: var(--panel); font-weight: 600; white-space: nowrap; }
+  .matrix td.y { color: var(--teal); font-weight: 600; }
+  .matrix td.n { color: #8a4b2a; font-weight: 600; }
+  .matrix-scroll { overflow-x: auto; }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap site-row">
+    <a class="wordmark" href="../index.html">XCM <span>Audit</span></a>
+    <span class="site-note">Fixed-scope reviews for Polkadot integrations</span>
+  </div>
+</header>
+<main class="wrap">
+<article>
+<h1>XCM capability matrix: 45 chains, checked live</h1>
+<p class="byline">Tyler Woods · 2026</p>
+<p>Every Substrate chain can be connected to. Fewer expose the extrinsics and runtime APIs an XCM integration needs. On 29 October 2026 I ran the four method probes and two runtime API probes from the <a href="check-chain-capabilities.html">capability checker</a> against every chain in the ParaSpell SDK list, and recorded the result.</p>
+<p>Probe method: call the extrinsic or runtime API with no arguments. A method that exists fails argument validation with <code>Incompatible runtime entry</code>; a missing one fails with <code>Runtime entry ... not found</code>. Anything else is retried once and reported as unknown. The live result is shown next to the SDK registry flag, which is what the SDK actually follows.</p>
+<h2>Result</h2>
+<p>41 of the 45 chains expose all four transfer methods and both runtime APIs. Four exceptions:</p>
+<ul>
+<li><strong>Pendulum</strong> lacks <code>transfer_assets_using_type_and_then</code>. It has the other three methods, no <code>DryRunApi</code> and no <code>XcmPaymentApi</code>.</li>
+<li><strong>Heima, HeimaPaseo and Peaq</strong> have all four methods but no <code>DryRunApi</code> and no <code>XcmPaymentApi</code>.</li>
+</ul>
+<p>Every live probe matched the SDK registry flag. That is the useful negative result: on these chains the SDK's compiled-in knowledge is current.</p>
+<h2>The matrix</h2>
+<div class="matrix-scroll">
+<table class="matrix">
+<thead><tr><th>Chain</th><th>Pallet</th><th>type-and-then</th><th>limited reserve</th><th>reserve</th><th>limited teleport</th><th>DryRunApi</th><th>XcmPaymentApi</th><th>Native</th></tr></thead>
+<tbody>
+<tr><td>Acala</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>ACA 12d</td></tr>
+<tr><td>Ajuna</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>AJUN 12d</td></tr>
+<tr><td>AssetHubKusama</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>KSM 12d</td></tr>
+<tr><td>AssetHubPaseo</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>PAS 10d</td></tr>
+<tr><td>AssetHubPolkadot</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>DOT 10d</td></tr>
+<tr><td>AssetHubWestend</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>WND 12d</td></tr>
+<tr><td>Astar</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>ASTR 18d</td></tr>
+<tr><td>Basilisk</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>BSX 12d</td></tr>
+<tr><td>BifrostKusama</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>BNC 12d</td></tr>
+<tr><td>BifrostPolkadot</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>BNC 12d</td></tr>
+<tr><td>BridgeHubKusama</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>KSM 12d</td></tr>
+<tr><td>BridgeHubPolkadot</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>DOT 10d</td></tr>
+<tr><td>BridgeHubWestend</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>WND 12d</td></tr>
+<tr><td>Collectives</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>DOT 10d</td></tr>
+<tr><td>CollectivesWestend</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>WND 12d</td></tr>
+<tr><td>CoretimeKusama</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>KSM 12d</td></tr>
+<tr><td>CoretimePolkadot</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>DOT 10d</td></tr>
+<tr><td>CoretimeWestend</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>WND 12d</td></tr>
+<tr><td>Curio</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>CGT 18d</td></tr>
+<tr><td>Darwinia</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>RING 18d</td></tr>
+<tr><td>Encointer</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>KSM 12d</td></tr>
+<tr><td>EnergyWebX</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>EWT 18d</td></tr>
+<tr><td>EnergyWebXPaseo</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>VT 18d</td></tr>
+<tr><td>Heima</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="n">no</td><td class="n">no</td><td>HEI 18d</td></tr>
+<tr><td>HeimaPaseo</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="n">no</td><td class="n">no</td><td>HEI 18d</td></tr>
+<tr><td>Hydration</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>HDX 12d</td></tr>
+<tr><td>HydrationPaseo</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>HDX 12d</td></tr>
+<tr><td>Jamton</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>DOTON 18d</td></tr>
+<tr><td>Karura</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>KAR 12d</td></tr>
+<tr><td>Kusama</td><td>XcmPallet</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>KSM 12d</td></tr>
+<tr><td>Mythos</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>MYTH 18d</td></tr>
+<tr><td>NeuroWeb</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>NEURO 12d</td></tr>
+<tr><td>Paseo</td><td>XcmPallet</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>PAS 10d</td></tr>
+<tr><td>Peaq</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="n">no</td><td class="n">no</td><td>PEAQ 18d</td></tr>
+<tr><td>Pendulum</td><td>PolkadotXcm</td><td class="n">no</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="n">no</td><td class="n">no</td><td>PEN 12d</td></tr>
+<tr><td>PeopleKusama</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>KSM 12d</td></tr>
+<tr><td>PeoplePaseo</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>PAS 10d</td></tr>
+<tr><td>PeoplePolkadot</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>DOT 10d</td></tr>
+<tr><td>PeopleWestend</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>WND 12d</td></tr>
+<tr><td>Polkadot</td><td>XcmPallet</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>DOT 10d</td></tr>
+<tr><td>RobonomicsPolkadot</td><td>XcmPallet</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>XRT 9d</td></tr>
+<tr><td>Shiden</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>SDN 18d</td></tr>
+<tr><td>Unique</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>UNQ 18d</td></tr>
+<tr><td>Westend</td><td>XcmPallet</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>WND 12d</td></tr>
+<tr><td>Xode</td><td>PolkadotXcm</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td>XON 12d</td></tr>
+</tbody>
+</table>
+</div>
+<h2>Excluded rows</h2>
+<ul>
+<li><strong>Centrifuge</strong>: the default provider reported finalized block 0 and a genesis-era metadata set, so its row would describe the provider, not the chain. The chain produced no blocks between 2026-08-23 and the check.</li>
+<li><strong>Penpal</strong>: local development chain, endpoint not reachable from here.</li>
+<li><strong>Ethereum and EthereumTestnet</strong>: external chains, not XCM origins, so the four extrinsics do not apply.</li>
+</ul>
+<p>Acala timed out on the first parallel run and completed on retry against the same endpoint. The row above is from the retry.</p>
+<h2>What this does not prove</h2>
+<p>The table is about capabilities, not routes. It does not check asset listings, decimals, existential deposits, the destination's support for an asset, the reserve chain, XCM version negotiation, or whether a specific transfer can be built. A row of yes is a necessary condition for a route, not a working route.</p>
+<hr>
+<p><em>AI assistance was used to draft this article. The data is a direct output of the published script, run on 29 October 2026; the raw JSON is dated and kept in the project record.</em></p>
+<div class="cta">
+  <h2>Want your integration checked against this surface?</h2>
+  <p>Fixed-scope XCM audits with a failing test or call-path proof for every finding. The first verified finding is free.</p>
+  <p><a href="../index.html#contact">Request the free finding</a> · <a href="check-chain-capabilities.html">Run the checker</a></p>
+</div>
+</article>
+</main>
+<footer class="site">
+  <div class="wrap">XCM Audit · <a href="mailto:woods.d.tyler@gmail.com">woods.d.tyler@gmail.com</a> · <a href="../index.html">Back to the audit page</a></div>
+</footer>
+</body>
+</html>
