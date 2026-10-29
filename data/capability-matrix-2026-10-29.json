@@ -1,0 +1,1127 @@
+[
+ {
+  "chain": "Acala",
+  "block": 12314910,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "ACA",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "Ajuna",
+  "block": 16098256,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "AJUN",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "AssetHubKusama",
+  "block": 23147443,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "KSM",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "AssetHubPaseo",
+  "block": 15052692,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "PAS",
+   "decimals": 10
+  }
+ },
+ {
+  "chain": "AssetHubPolkadot",
+  "block": 22436199,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "DOT",
+   "decimals": 10
+  }
+ },
+ {
+  "chain": "AssetHubWestend",
+  "block": 18738477,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "WND",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "Astar",
+  "block": 15270905,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "ASTR",
+   "decimals": 18
+  }
+ },
+ {
+  "chain": "Basilisk",
+  "block": 19143131,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "BSX",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "BifrostKusama",
+  "block": 16164827,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "BNC",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "BifrostPolkadot",
+  "block": 14457422,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "BNC",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "BridgeHubKusama",
+  "block": 9354859,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "KSM",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "BridgeHubPolkadot",
+  "block": 8842316,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "DOT",
+   "decimals": 10
+  }
+ },
+ {
+  "chain": "BridgeHubWestend",
+  "block": 13092168,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "WND",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "Collectives",
+  "block": 10004277,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "DOT",
+   "decimals": 10
+  }
+ },
+ {
+  "chain": "CollectivesWestend",
+  "block": 13803708,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "WND",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "CoretimeKusama",
+  "block": 6300655,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "KSM",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "CoretimePolkadot",
+  "block": 5376101,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "DOT",
+   "decimals": 10
+  }
+ },
+ {
+  "chain": "CoretimeWestend",
+  "block": 10415548,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "WND",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "Curio",
+  "block": 5619284,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "CGT",
+   "decimals": 18
+  }
+ },
+ {
+  "chain": "Darwinia",
+  "block": 13671791,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "RING",
+   "decimals": 18
+  }
+ },
+ {
+  "chain": "Encointer",
+  "block": 15417449,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "KSM",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "EnergyWebX",
+  "block": 7764976,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "EWT",
+   "decimals": 18
+  }
+ },
+ {
+  "chain": "EnergyWebXPaseo",
+  "block": 5056964,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "VT",
+   "decimals": 18
+  }
+ },
+ {
+  "chain": "Heima",
+  "block": 11379398,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": false,
+    "registry": false
+   },
+   "XcmPaymentApi": {
+    "live": false,
+    "registry": false
+   }
+  },
+  "native": {
+   "symbol": "HEI",
+   "decimals": 18
+  }
+ },
+ {
+  "chain": "HeimaPaseo",
+  "block": 3217446,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": false,
+    "registry": false
+   },
+   "XcmPaymentApi": {
+    "live": false,
+    "registry": false
+   }
+  },
+  "native": {
+   "symbol": "HEI",
+   "decimals": 18
+  }
+ },
+ {
+  "chain": "Hydration",
+  "block": 16360122,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "HDX",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "HydrationPaseo",
+  "block": 2919025,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "HDX",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "Jamton",
+  "block": 4170655,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "DOTON",
+   "decimals": 18
+  }
+ },
+ {
+  "chain": "Karura",
+  "block": 12744396,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "KAR",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "Kusama",
+  "block": 35867768,
+  "pallet": "XcmPallet",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "KSM",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "Mythos",
+  "block": 11798185,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "MYTH",
+   "decimals": 18
+  }
+ },
+ {
+  "chain": "NeuroWeb",
+  "block": 15413161,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "NEURO",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "Paseo",
+  "block": 1704381,
+  "pallet": "XcmPallet",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "PAS",
+   "decimals": 10
+  }
+ },
+ {
+  "chain": "Peaq",
+  "block": 12169893,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": false,
+    "registry": false
+   },
+   "XcmPaymentApi": {
+    "live": false,
+    "registry": false
+   }
+  },
+  "native": {
+   "symbol": "PEAQ",
+   "decimals": 18
+  }
+ },
+ {
+  "chain": "Pendulum",
+  "block": 7913151,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": false,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": false,
+    "registry": false
+   },
+   "XcmPaymentApi": {
+    "live": false,
+    "registry": false
+   }
+  },
+  "native": {
+   "symbol": "PEN",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "PeopleKusama",
+  "block": 11345033,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "KSM",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "PeoplePaseo",
+  "block": 8286254,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "PAS",
+   "decimals": 10
+  }
+ },
+ {
+  "chain": "PeoplePolkadot",
+  "block": 11579331,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "DOT",
+   "decimals": 10
+  }
+ },
+ {
+  "chain": "PeopleWestend",
+  "block": 13272474,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "WND",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "Polkadot",
+  "block": 33640238,
+  "pallet": "XcmPallet",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "DOT",
+   "decimals": 10
+  }
+ },
+ {
+  "chain": "RobonomicsPolkadot",
+  "block": 5941410,
+  "pallet": "XcmPallet",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "XRT",
+   "decimals": 9
+  }
+ },
+ {
+  "chain": "Shiden",
+  "block": 16639664,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "SDN",
+   "decimals": 18
+  }
+ },
+ {
+  "chain": "Unique",
+  "block": 13337373,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "UNQ",
+   "decimals": 18
+  }
+ },
+ {
+  "chain": "Westend",
+  "block": 33508219,
+  "pallet": "XcmPallet",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "WND",
+   "decimals": 12
+  }
+ },
+ {
+  "chain": "Xode",
+  "block": 5288982,
+  "pallet": "PolkadotXcm",
+  "methods": {
+   "transfer_assets_using_type_and_then": true,
+   "limited_reserve_transfer_assets": true,
+   "reserve_transfer_assets": true,
+   "limited_teleport_assets": true
+  },
+  "runtime": {
+   "DryRunApi": {
+    "live": true,
+    "registry": true
+   },
+   "XcmPaymentApi": {
+    "live": true,
+    "registry": true
+   }
+  },
+  "native": {
+   "symbol": "XON",
+   "decimals": 12
+  }
+ }
+]
