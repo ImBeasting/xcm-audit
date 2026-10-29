@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Check what a chain exposes before you trust an XCM route · XCM Audit</title>
+<meta name="description" content="Four runtime checks decide whether an XCM transfer can be built and dry run: the transfer method, type-and-then, DryRunApi and XcmPaymentApi. One command prints them.">
+<link rel="canonical" href="https://imbeasting.github.io/xcm-audit/writing/check-chain-capabilities.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Check what a chain exposes before you trust an XCM route">
+<meta property="og:description" content="Four runtime checks decide whether an XCM transfer can be built and dry run: the transfer method, type-and-then, DryRunApi and XcmPaymentApi. One command prints them.">
+<meta property="og:url" content="https://imbeasting.github.io/xcm-audit/writing/check-chain-capabilities.html">
+<meta property="og:site_name" content="XCM Audit">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Check what a chain exposes before you trust an XCM route">
+<meta name="twitter:description" content="Four runtime checks decide whether an XCM transfer can be built and dry run: the transfer method, type-and-then, DryRunApi and XcmPaymentApi. One command prints them.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #edf0f2; --panel: #f7f9fa; --ink: #16232b; --muted: #55666e;
+    --line: #c6d0d4; --teal: #1f6f66; --brass: #a97a24; --max: 760px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 17px; line-height: 1.68; -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--teal); text-underline-offset: 3px; }
+  a:focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; }
+  .wrap { width: min(100% - 40px, var(--max)); margin-inline: auto; }
+  header.site { padding: 26px 0 18px; border-bottom: 1px solid var(--line); }
+  .site-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px 24px; }
+  .wordmark { font-weight: 700; letter-spacing: -0.03em; font-size: 1.15rem; color: var(--ink); text-decoration: none; }
+  .wordmark span { color: var(--teal); }
+  .site-note { color: var(--muted); font-size: 0.9rem; }
+  article { padding: 48px 0 24px; }
+  h1 { font-family: "Newsreader", Georgia, serif; font-weight: 500; font-size: clamp(2rem, 4vw, 2.9rem); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 14px; }
+  h2 { font-family: "Newsreader", Georgia, serif; font-weight: 500; font-size: 1.55rem; line-height: 1.2; margin: 40px 0 10px; }
+  h3 { font-size: 1.1rem; margin: 28px 0 8px; }
+  p { margin: 0 0 16px; }
+  ul, ol { margin: 0 0 18px; padding-left: 22px; }
+  li { margin: 6px 0; }
+  code { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; font-size: 0.9em; overflow-wrap: anywhere; }
+  pre { background: #16232b; color: #edf0f2; padding: 16px 18px; border-radius: 6px; overflow-x: auto; margin: 0 0 20px; }
+  pre code { background: none; border: 0; padding: 0; color: inherit; font-size: 0.88em; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+  .byline { color: var(--muted); font-size: 0.92rem; margin: 0 0 28px; }
+  .cta { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px 22px; margin: 36px 0 8px; }
+  .cta h2 { margin: 0 0 8px; font-size: 1.25rem; }
+  .cta p { margin: 0 0 10px; }
+  footer.site { border-top: 1px solid var(--line); padding: 22px 0 40px; color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap site-row">
+    <a class="wordmark" href="../index.html">XCM <span>Audit</span></a>
+    <span class="site-note">Fixed-scope reviews for Polkadot integrations</span>
+  </div>
+</header>
+<article>
+<h1>Check what a chain exposes before you trust an XCM route</h1>
+<p class="byline">Tyler Woods · 2026</p>
+<p>A chain can accept a WebSocket connection, answer a balance query, and still have no way to build the transfer you asked for. The failure surfaces as a thrown error at build time, after the amount and the recipient are set, and the message usually names a method rather than the missing capability.</p>
+<p>Four runtime checks decide whether a route can be built, fee-estimated, and dry run. They take one command to print.</p>
+<h2>1. The baseline transfer method</h2>
+<p>The SDK needs the chain's XCM pallet, <code>PolkadotXcm</code> or <code>XcmPallet</code>, and the <code>transfer_assets</code> extrinsic. Without either, the ordinary asset-transfer path has nothing to call.</p>
+<h2>2. <code>transfer_assets_using_type_and_then</code></h2>
+<p>Some routes cannot use the baseline call. A relay asset on an origin that does not reserve it needs type-and-then to place the fee and the transferred asset in one message. Some external-asset routes cross the same branch. When the method is missing, the SDK throws <code>TypeAndThenUnavailableError</code> for those routes instead of building an invalid call. That is the correct failure. It is still a route that will not work.</p>
+<h2>3. <code>DryRunApi</code></h2>
+<p>Dry run is how the SDK turns a built call into a fee and a success check. Without it, fee estimation falls back to other sources, and the type-and-then path loses the pass that would have replaced its fee placeholder. On chains that also lack the payment API, a transfer can be built with a fee it cannot verify. The public report on the placeholder path is <a href="https://github.com/paraspell/xcm-tools/issues/2353">xcm-tools#2353</a>.</p>
+<h2>4. <code>XcmPaymentApi</code></h2>
+<p>This is the fee-query interface the SDK prefers when it exists. Without it, the SDK uses <code>paymentInfo</code> or dry run instead, and some execution paths check the flag before trusting a fee from this source.</p>
+<h2>Run it</h2>
+<p>The script is <a href="../tools/check-chain-capabilities.mjs">check-chain-capabilities.mjs</a>. It uses <code>@paraspell/sdk</code> from npm and connects to each chain's default endpoint.</p>
+<pre><code>npm install @paraspell/sdk
+node check-chain-capabilities.mjs Centrifuge Pendulum Peaq Heima</code></pre>
+<h2>Example output</h2>
+<p>Run against four Polkadot parachains on 29 October 2026:</p>
+<pre><code>chain             pallet        typeThen  transferAssets  DryRunApi  XcmPaymentApi  native
+Centrifuge        PolkadotXcm   no        yes             no         no             CFG (18 decimals)
+Pendulum          PolkadotXcm   no        yes             no         no             PEN (12 decimals)
+Peaq              PolkadotXcm   yes       yes             no         no             PEAQ (18 decimals)
+Heima             PolkadotXcm   yes       yes             no         no             HEI (18 decimals)</code></pre>
+<h2>How to read it</h2>
+<ul>
+<li><strong>typeThen no, transferAssets yes.</strong> Ordinary transfers can be built. Relay-asset routes from that chain stop at <code>TypeAndThenUnavailableError</code> unless the chain reserves the asset and the SDK takes the reserve path.</li>
+<li><strong>typeThen yes, DryRunApi no.</strong> The type-and-then branch can build, but it cannot dry run for fees. This is the combination behind the placeholder report above.</li>
+<li><strong>XcmPaymentApi no.</strong> Fee figures come from another source. Check which one for the path you care about before trusting a quote.</li>
+<li><strong>Every column yes.</strong> The chain exposes the surface. It does not mean a given asset has a working route.</li>
+</ul>
+<h2>What it does not check</h2>
+<p>Asset listings, decimals, existential deposits, the destination's support for the asset, the reserve chain, XCM version negotiation, and whether a route exists at all. Those come from the asset map and the destination, not from the origin's metadata. A green table is a necessary condition, not a route test.</p>
+<hr>
+<p><em>AI assistance was used to draft this article. The example output is from a real run and the method names are checked against the SDK source.</em></p>
+<div class="cta">
+  <h2>Want the whole surface checked?</h2>
+  <p>Fixed-scope XCM audits with a failing test or call-path proof for every finding. The first verified finding is free.</p>
+  <p><a href="../index.html#contact">Request the free finding</a> · <a href="https://tylerwoods5.gumroad.com/l/xcm-preflight-pack">Pre-flight pack, $49</a></p>
+</div>
+</article>
+</main>
+<footer class="site">
+  <div class="wrap">XCM Audit · <a href="mailto:woods.d.tyler@gmail.com">woods.d.tyler@gmail.com</a> · <a href="../index.html">Back to the audit page</a></div>
+</footer>
+</body>
+</html>
